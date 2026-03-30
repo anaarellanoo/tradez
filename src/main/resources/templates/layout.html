@@ -1,0 +1,25 @@
+<!-- layout.html -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" >
+<head>
+    <title th:text="${pageTitle}"></title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="square1"> 
+        <div class="square2">
+            <div class="square3">
+                <nav class="bottom-navbar">
+                </nav>
+                <div class="square4">
+                     <div layout:fragment="content"></div>
+                </div>
+            </div>
+       </div>
+    </div>
+        </div>
+    </div>
+</body>
+</html>
+<!-- end of file -->

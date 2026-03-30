@@ -1,0 +1,150 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{mainlayout}">
+
+<head>
+  <title>Tradez - Messages</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <link rel="stylesheet" th:href="@{/css/message.css}" />
+</head>
+
+<body>
+  <div layout:fragment="content" class="view-container">
+    <div class="sidebar">
+      <div th:if="${currentUserId == item.userId}" class="action-box">
+        <h4>Item Status</h4>
+        <form th:action="@{/tradez/status/update}" method="post">
+          <input type="hidden" name="itemId" th:value="${item.itemId}" />
+          <select name="newStatus" onchange="this.form.submit()" class="status-select">
+            <option value="available" th:selected="${item.status == 'available'}">
+              🟢 Available
+            </option>
+            <option value="pending" th:selected="${item.status == 'pending'}">
+              🟡 Pending Trade
+            </option>
+            <option value="traded" th:selected="${item.status == 'traded'}">
+              🔴 Traded
+            </option>
+          </select>
+        </form>
+      </div>
+
+      <div th:if="${currentUserId != item.userId and canReview}" class="action-box">
+        <h4>Trade Complete?</h4>
+        <p style="font-size: 0.9rem; margin-bottom: 15px">
+          Leave a review for <strong th:text="${item.userFullName}"></strong>
+        </p>
+        <button type="button" class="btn-main btn-primary-solid" onclick="openReviewModal()">
+          Rate Trader
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="header-info">
+            <a th:href="@{/tradez/profile/{id}(id=${chatPartnerId})}" class="seller-link"
+              th:text="${chatPartnerFullName}">
+            </a>
+
+            <a th:href="@{/tradez/item/{id}(id=${item.itemId})}" class="header-item-link">
+              Discussing: <span th:text="${item.itemName}"></span>
+            </a>
+          </div>
+        </div>
+
+        <div class="chat-window" id="chatWindow">
+          <div th:each="msg : ${messages}"
+            th:class="${msg.senderId == currentUserId} ? 'msg-bubble msg-sent' : 'msg-bubble msg-received'">
+            <!-- Sender Name -->
+            <div class="msg-sender" th:text="${msg.senderId == currentUserId ? 'You' : chatPartnerFullName}"></div>
+
+            <!-- Message -->
+            <span th:text="${msg.content}"></span>
+
+            <!-- Time -->
+            <div class="msg-info" th:text="${#temporals.format(msg.timestamp, 'HH:mm')}"></div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <form th:action="@{/tradez/message/send}" method="post" class="message-form">
+            <input type="hidden" name="itemId" th:value="${item.itemId}" />
+            <input type="hidden" name="receiverId" th:value="${chatPartnerId}" />
+
+            <textarea name="content" class="chat-input" placeholder="Write a message..." required></textarea>
+            <button type="submit" class="btn-main btn-primary-solid">
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="reviewModal" class="modal">
+      <div class="modal-content">
+        <h3>Rate your Trade</h3>
+        <p>
+          How was your experience with
+          <strong th:text="${item.userFullName}"></strong>?
+        </p>
+
+        <form th:action="@{/tradez/reviews/add}" method="post">
+          <input type="hidden" name="itemId" th:value="${item.itemId}" />
+          <input type="hidden" name="sellerId" th:value="${chatPartnerId}" />
+
+          <label>Overall Rating</label>
+          <select name="rating" class="status-select" required>
+            <option value="5">★★★★★ Excellent</option>
+            <option value="4">★★★★☆ Good</option>
+            <option value="3">★★★☆☆ Average</option>
+            <option value="2">★★☆☆☆ Poor</option>
+            <option value="1">★☆☆☆☆ Terrible</option>
+          </select>
+
+          <label>Share your thoughts</label>
+          <textarea name="comment" class="chat-input"
+            placeholder="Was the item as described? Was the communication good?" required></textarea>
+
+          <div class="modal-footer-btns">
+            <button type="submit" class="btn-submit-review">
+              Submit Review
+            </button>
+            <button type="button" class="btn-cancel-review" onclick="closeReviewModal()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function openReviewModal() {
+        const modal = document.getElementById("reviewModal");
+        if (modal) {
+          modal.style.display = "block";
+        }
+      }
+
+      function closeReviewModal() {
+        document.getElementById("reviewModal").style.display = "none";
+      }
+
+      window.onclick = function (event) {
+        const modal = document.getElementById("reviewModal");
+        if (event.target == modal) {
+          closeReviewModal();
+        }
+      };
+
+      // Scroll chat to bottom
+      const chatWindow = document.getElementById("chatWindow");
+      if (chatWindow) {
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+    </script>
+  </div>
+</body>
+
+</html>

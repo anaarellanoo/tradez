@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{mainlayout}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} ?: 'Tradez'">Tradez</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/itemCard.css}">
+    <link rel="stylesheet" th:href="@{/css/addItemForm.css}">
+</head>
+<body>
+<div layout:fragment="content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <button class="filter-btn" onclick="toggleFilters()">☰ Filters</button>
+    </header>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-navbar"> 
+        <ul class="bottom-nav-links"> 
+            <li>
+                <a th:href="@{/tradez/saved}"> 
+                    <img th:src="@{/css/images/save.svg}" alt="Save" class="bicon-svg"/> 
+                </a> 
+            </li>
+            <li> 
+                <button class="bicon-btn" onclick="openAddItemForm()"> 
+                    <img th:src="@{/css/images/add.svg}" alt="Add Item" class="bicon-svg"/> 
+                </button> 
+            </li> 
+            <li> 
+                <a th:href="@{/tradez/inbox}"> 
+                    <img th:src="@{/css/images/messages.svg}" alt="Messages" class="bicon-svg"/> 
+                </a> 
+            </li> 
+        </ul> 
+    </nav>
+
+    <!-- Filter Panel -->
+    <form th:action="@{/tradez/search}" method="get" class="filter-panel" id="filterPanel">
+        <div class="dropdown-container">
+
+            <!-- Category -->
+            <details class="filter-dropdown">
+                <summary class="dropdown-label">Category</summary>
+                <div class="dropdown-content">
+                    <div class="checkbox-chips">
+                        <label class="chip" th:each="c : ${categories}">
+                            <input type="radio" name="cat" th:value="${c.categoryId}" th:checked="${categoryId == c.categoryId}">
+                            <span th:text="${c.categoryName}">Category</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="cat" value="" th:checked="${categoryId == null}">
+                            <span>All Categories</span>
+                        </label>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Desired Category -->
+            <details class="filter-dropdown">
+                <summary class="dropdown-label">Desired Category</summary>
+                <div class="dropdown-content">
+                    <div class="checkbox-chips">
+                        <label class="chip" th:each="dc : ${categories}">
+                            <input type="radio" name="desiredCat" th:value="${dc.categoryId}" th:checked="${desiredCategoryId == dc.categoryId}">
+                            <span th:text="${dc.categoryName}">Desired Category</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="desiredCat" value="" th:checked="${desiredCategoryId == null}">
+                            <span>All Desired Categories</span>
+                        </label>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Location & Type -->
+            <details class="filter-dropdown">
+                <summary class="dropdown-label">Location & Type</summary>
+                <div class="dropdown-content">
+                    <div class="checkbox-chips">
+                        <label class="chip">
+                            <input type="radio" name="dist" value="" th:checked="${dist == null && (online == null || !online)}">
+                            <span>🌍 Anywhere</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="dist" value="online" th:checked="${online}">
+                            <span>🌐 Online Only</span>
+                        </label>
+                        <hr>
+                        <label class="chip">
+                            <input type="radio" name="dist" value="5" th:checked="${dist == 5}">
+                            <span>📍 Within 5 mi</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="dist" value="20" th:checked="${dist == 20}">
+                            <span>📍 Within 20 mi</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="dist" value="50" th:checked="${dist == 50}">
+                            <span>📍 Within 50 mi</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="dist" value="100" th:checked="${dist == 100}">
+                            <span>📍 Within 100 mi</span>
+                        </label>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Condition -->
+            <details class="filter-dropdown">
+                <summary class="dropdown-label">Condition</summary>
+                <div class="dropdown-content">
+                    <div class="checkbox-chips">
+                        <label class="chip" th:each="c : ${conditions}">
+                            <input type="checkbox" name="cond" th:value="${c.conditionId}" th:checked="${selectedConditions != null && selectedConditions.contains(c.conditionId)}">
+                            <span th:text="${c.conditionName}">Condition</span>
+                        </label>
+                    </div>
+                </div>
+            </details>
+
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="apply-btn">Apply Filters</button>
+            <a th:href="@{/tradez/home}" class="clear-btn">Reset</a>
+        </div>
+    </form>
+
+    <!-- Item Grid -->
+    <div class="item-grid">
+        <div th:each="item : ${items}">
+            <div th:replace="~{fragments/itemCard :: itemCard(item=${item})}"></div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div th:replace="~{fragments/addItems :: addItemCard}"></div>
+
+
+
+<!-- Scripts -->
+<script>
+function toggleFilters() {
+    const panel = document.getElementById("filterPanel");
+    panel.classList.toggle("active");
+}
+
+document.addEventListener("click", function(e) {
+    const panel = document.getElementById("filterPanel");
+    const btn = document.querySelector(".filter-btn");
+
+    if (!panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.classList.remove("active");
+    }
+});
+
+function openAddItemForm() { document.getElementById("addItemModal").style.display = "block"; }
+function closeAddItemForm() { document.getElementById("addItemModal").style.display = "none"; }
+
+</script>
+</div>
+</body>
+</html>
+

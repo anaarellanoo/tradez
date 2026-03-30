@@ -1,0 +1,13 @@
+package com.anaarellano.tradez;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class TradezApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(TradezApplication.class, args);
+	}
+
+}

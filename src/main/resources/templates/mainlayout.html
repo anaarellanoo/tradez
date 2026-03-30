@@ -1,0 +1,211 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="${pageTitle} ?: 'Tradez'">Tradez</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/filter.css}" />
+    <link rel="stylesheet" th:href="@{/css/notification.css}" />
+  </head>
+  <body>
+    <div class="square1">
+      <div class="square2">
+        <div class="square3">
+          <div class="square4">
+            <!-- Navbar -->
+            <nav class="navbar">
+              <div class="brand">
+                <a
+                  th:href="@{/tradez/home}"
+                  style="text-decoration: none; color: inherit"
+                  >Tradez</a
+                >
+              </div>
+
+              <!-- Search -->
+              <div class="search-container" style="margin-bottom: 20px">
+                <form
+                  th:action="@{/tradez/search}"
+                  method="get"
+                  style="display: flex; gap: 10px"
+                >
+                  <input
+                    type="text"
+                    name="query"
+                    class="search-input"
+                    th:value="${searchQuery}"
+                    placeholder="Search Tradez..."
+                    style="
+                      flex-grow: 1;
+                      padding: 10px;
+                      border-radius: 20px;
+                      border: 1px solid #ddd;
+                    "
+                  />
+                  <a
+                    th:if="${searchQuery != null and !searchQuery.isEmpty()}"
+                    th:href="@{/tradez/home}"
+                    class="search-clear-btn"
+                    title="Clear Search"
+                    >&times;</a
+                  >
+                  <button
+                    type="submit"
+                    class="submit-btn"
+                    style="width: auto; padding: 0 20px"
+                  >
+                    Search
+                  </button>
+                </form>
+              </div>
+
+              <!-- Icons -->
+              <div class="icons">
+                <a
+                  href="javascript:void(0)"
+                  onclick="toggleNotifs()"
+                  style="position: relative; display: inline-block"
+                >
+                  <button class="icon-btn">
+                    <img
+                      th:src="@{/css/images/bell.svg}"
+                      alt="Notifications"
+                      class="icon-svg"
+                    />
+                  </button>
+                  <span
+                    id="notification-badge"
+                    th:if="${unreadCount > 0}"
+                    th:text="${unreadCount}"
+                  >
+                  </span>
+                </a>
+                <a th:href="@{/tradez/profile}">
+                  <button class="icon-btn">
+                    <img
+                      th:src="@{/css/images/profile.svg}"
+                      alt="Profile"
+                      class="icon-svg"
+                    />
+                  </button>
+                </a>
+              </div>
+            </nav>
+
+            <div layout:fragment="content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Sidebar -->
+    <div id="sidebarOverlay" onclick="toggleNotifs()"></div>
+
+    <div id="notificationSidebar">
+      <div class="sidebar-header">
+        <h3 class="m-0">Notifications</h3>
+        <button
+          class="btn btn-sm btn-light"
+          onclick="toggleNotifs()"
+          style="border: none; background: none; color: white; font-size: 20px"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="sidebar-content" id="notifContainer">
+        <div
+          th:if="${notifications == null or #lists.isEmpty(notifications)}"
+          style="text-align: center; padding: 20px; color: #888"
+        >
+          <p>No notifications yet!</p>
+        </div>
+
+        <div
+          th:each="n : ${notifications}"
+          class="notif-item"
+          th:onclick="handleNotifClick([[${n.id}]], [[${n.type == 'MESSAGE' ? '/tradez/messages/' + n.itemId + '/' + n.senderId : '/tradez/item/' + n.itemId}]])"
+        >
+          <p
+            th:text="${n.content}"
+            class="mb-1"
+            style="margin: 0; font-size: 14px"
+          ></p>
+          <small
+            class="text-muted"
+            th:text="${#temporals.format(n.dateCreated, 'h:mm a')}"
+          ></small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:inline="javascript">
+      // Poll notification count every 30s
+      setInterval(async () => {
+        try {
+          const response = await fetch("/tradez/api/notifications/count");
+          if (response.ok) {
+            const count = await response.json();
+            const badge = document.getElementById("notification-badge");
+            if (badge) {
+              if (count > 0) {
+                badge.innerText = count;
+                badge.style.display = "flex";
+              } else {
+                badge.style.display = "none";
+              }
+            }
+          }
+        } catch (e) {
+          /* silent fail */
+        }
+      }, 30000);
+
+      // Toggle Sidebar
+      function toggleNotifs() {
+        const sidebar = document.getElementById("notificationSidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+        sidebar.classList.toggle("active");
+        overlay.style.display = sidebar.classList.contains("active")
+          ? "block"
+          : "none";
+      }
+
+      // Notification click (delete & redirect)
+      function handleNotifClick(notifId, url) {
+        const headers = { "Content-Type": "application/json" };
+
+        /*[# th:if="${_csrf}"]*/
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ "X-CSRF-TOKEN";
+        const csrfToken = /*[[${_csrf.token}]]*/ "";
+        headers[csrfHeader] = csrfToken;
+        /*[/]*/
+
+        fetch(`/tradez/delete/${notifId}`, {
+          method: "POST",
+          headers: headers,
+        })
+          .then((response) => {
+            window.location.href = url;
+          })
+          .catch((error) => {
+            console.error("Error deleting notification:", error);
+            window.location.href = url;
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("addItemModal");
+
+        if (shouldEdit && modal) {
+          modal.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>

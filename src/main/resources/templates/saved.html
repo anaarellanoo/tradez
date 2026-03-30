@@ -1,0 +1,44 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{mainlayout}"
+>
+  <head>
+    <title>Tradez - My Saved Items</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/itemCard.css}" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="savedview-container">
+        <div class="saved-header">
+          <h1>My Saved Items</h1>
+          <p th:unless="${#lists.isEmpty(items)}">
+            You have <span th:text="${#lists.size(items)}">0</span> items
+            bookmarked for later.
+          </p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(items)}" class="empty-saved-state">
+          <img th:src="@{/css/images/save.svg}" alt="No Items" />
+          <h3>Your collection is empty</h3>
+          <p class="text-muted">
+            Save items you're interested in to keep track of them here.
+          </p>
+          <a th:href="@{/tradez/home}" class="explore-btn">Start Exploring</a>
+        </div>
+
+        <div class="item-grid" th:unless="${#lists.isEmpty(items)}">
+          <div th:each="item : ${items}">
+            <div
+              th:replace="~{fragments/itemCard :: itemCard(item=${item})}"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div th:replace="~{fragments/addItems :: addItemCard}"></div>
+    </div>
+  </body>
+</html>

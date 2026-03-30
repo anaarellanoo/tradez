@@ -1,0 +1,136 @@
+.filter-btn {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.filter-panel {
+    display: none;
+    position: fixed;
+    top: 80px;           
+    left: 20px;           
+    width: 280px;         
+    max-height: 80vh;     
+    background: #fff;
+    z-index: 1000;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow-y: auto;
+}
+
+.filter-panel.active {
+    display: flex;        
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dropdown-container {
+    display: flex;
+    gap: 10px;
+    flex-direction: column; 
+}
+
+.filter-dropdown {
+    flex: 1;
+    position: relative; 
+}
+
+.filter-dropdown summary {
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.dropdown-label {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    background: white;
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.85rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown-label::after {
+    content: ' ▾';
+    font-size: 10px;
+    margin-left: 5px;
+}
+
+.dropdown-content {
+    position: static;      
+    width: 100%;
+    box-shadow: none;      
+    border: none;
+    padding: 10px 0;
+}
+
+.checkbox-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.chip {
+    background-color: #f0f2f5;
+    padding: 6px 10px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.chip input { display: none; }
+
+.chip span {
+    display: inline-block;
+    padding: 7px 12px;
+    background: #f0f2f5;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.chip input:checked + span {
+    background: #1877F2;
+    color: white;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.apply-btn {
+    flex: 3;
+    background-color: #1976d2;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.clear-btn {
+    flex: 1;
+    background-color: #f0f2f5;
+    color: #333;
+    text-align: center;
+    border-radius: 25px;
+    text-decoration: none;
+    padding: 10px;
+}

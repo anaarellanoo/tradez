@@ -1,0 +1,189 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{mainlayout}">
+
+<head>
+  <title th:text="${item.itemName}"></title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <link rel="stylesheet" th:href="@{/css/item.css}" />
+  <link rel="stylesheet" th:href="@{/css/addItemForm.css}" />
+</head>
+
+<body>
+  <div layout:fragment="content" class="view-container">
+    <main class="main-content">
+      <div class="item-hero-container">
+        <img th:src="${item.imageUrl != null ? item.imageUrl : '/css/images/no-image.png'}" class="item-hero-image"
+          alt="Item Image" />
+      </div>
+      <section class="item-info-section">
+        <div class="item-header">
+          <h1 class="item-title" th:text="${item.itemName}">Item Name</h1>
+          <div class="meta-tags">
+            <span class="badge" th:text="${item.categoryName}">Category</span>
+            <span class="badge" th:text="${item.conditionName}">Condition</span>
+            <span class="badge" th:classappend="${item.status}" th:text="${item.status}">Status</span>
+            <span class="badge" th:text="${item.isOnline ? 'Online Trade' : 'In-Person'}">Mode</span>
+          </div>
+        </div>
+        <div class="seller-card-preview">
+          <div class="avatar-circle-sm" th:text="${#strings.substring(item.userFullName, 0, 1)}">
+            U
+          </div>
+          <div class="seller-text">
+            <a th:href="@{/tradez/profile/{id}(id=${item.userId})}" class="seller-link"
+              th:text="${item.userFullName}">Name</a>
+            <div class="star-rating">
+              <span th:each="i : ${#numbers.sequence(1, 5)}"
+                th:text="${item.sellerAverageRating >= i} ? '★' : '☆'"></span>
+              <small th:text="'(' + ${item.sellerReviewCount} + ')'"></small>
+            </div>
+          </div>
+        </div>
+        <div class="description-box">
+          <h3>Description</h3>
+          <p th:text="${item.description}">Description...</p>
+        </div>
+        <div class="trade-callout-in-depth">
+          <div class="trade-info-row">
+            <strong>Wants:</strong>
+            <span class="badge" th:text="${item.desiredCategoryName}">Electronics</span>
+          </div>
+
+          <div class="trade-info-row">
+            <strong>Details:</strong>
+            <span th:text="${item.desiredReturn}">Anything!</span>
+          </div>
+        </div>
+        <div th:if="${!item.isOnline}" class="location-box">
+          <hr />
+          <h3>Location</h3>
+          <p class="text-muted" th:text="${item.location}">Phoenix, AZ</p>
+          <div id="map"></div>
+        </div>
+      </section>
+    </main>
+    <aside class="sidebar">
+      <div th:if="${currentUserId != null && currentUserId == item.userId}" class="action-box owner-box">
+        <h4>Manage Your Listing</h4>
+        <p class="text-muted">
+          Posted <span th:text="${item.getRelativeTime()}">just now</span>
+        </p>
+        <a th:href="@{/tradez/edit/{id}(id=${item.itemId})}" class="btn-main btn-secondary">Edit Listing</a>
+        <form th:action="@{/tradez/delete}" method="post">
+          <input type="hidden" name="itemId" th:value="${item.itemId}" />
+          <button type="submit" class="btn-main btn-danger" onclick="return confirm('Delete permanently?');">
+            Delete Item
+          </button>
+        </form>
+        <div class="action-box" th:if="${currentUserId == item.userId}" style="margin-bottom: 20px">
+          <h4>Update Item Status</h4>
+          <form th:action="@{/tradez/status/update}" method="post">
+            <input type="hidden" name="itemId" th:value="${item.itemId}" />
+            <select name="newStatus" onchange="this.form.submit()" class="form-control" style="
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 6px;
+                  border: 1px solid #ccc;
+                ">
+              <option value="available" th:selected="${item.status == 'available'}">
+                🟢 Available
+              </option>
+              <option value="pending" th:selected="${item.status == 'pending'}">
+                🟡 Pending Trade
+              </option>
+              <option value="traded" th:selected="${item.status == 'traded'}">
+                🔴 Traded
+              </option>
+            </select>
+          </form>
+        </div>
+      </div>
+      <div th:if="${currentUserId != item.userId}" class="action-box visitor-box">
+        <h4>Interested in a Trade?</h4>
+        <p class="text-muted">Send a message to start negotiating.</p>
+        <form th:action="@{/tradez/message/send}" method="post" class="message-form">
+          <input type="hidden" name="itemId" th:value="${item.itemId}" />
+          <input type="hidden" name="receiverId" th:value="${item.userId}" />
+          <textarea name="content" class="message-input-refined"
+            placeholder="Hi! Is this still available? I'd love to trade my..." required></textarea>
+          <button type="submit" class="btn-main btn-primary-solid">
+            Send Message
+          </button>
+        </form>
+        <form th:action="@{/tradez/item/save-toggle}" method="post">
+          <input type="hidden" name="itemId" th:value="${item.itemId}" />
+          <button type="submit" class="btn-main btn-favorite">
+            <span class="heart-inline">♥</span> Save to Favorites
+          </button>
+        </form>
+      </div>
+      <div class="recommendations-list">
+        <h4 class="sidebar-label">Others you might like</h4>
+        <div th:each="sideItem : ${sidebarItems}" class="mini-item-card">
+          <a th:href="@{/tradez/item/{id}(id=${sideItem.itemId})}" class="mini-card-link">
+            <div class="mini-image-wrapper">
+              <img th:src="${sideItem.imageUrl != null ? sideItem.imageUrl : '/css/images/no-image.png'}"
+                alt="Recommended Item" />
+            </div>
+            <div class="mini-content">
+              <h5 class="mini-title" th:text="${sideItem.itemName}">
+                Item Name
+              </h5>
+              <p class="mini-seller" th:text="${sideItem.userFullName}">
+                Seller Name
+              </p>
+              <p class="mini-meta">
+                <span th:text="${sideItem.location}">Location</span>
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <div th:replace="~{fragments/addItems :: addItemCard}"></div>
+    <script th:inline="javascript">
+      // 1. Map Logic
+      var lat = /*[[${item.latitude}]]*/ 0;
+      var lng = /*[[${item.longitude}]]*/ 0;
+      if (lat && lng && lat !== 0) {
+        var map = L.map("map").setView([lat, lng], 13);
+        L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        ).addTo(map);
+        L.circle([lat, lng], {
+          radius: 600,
+          color: "#1877F2",
+          fillOpacity: 0.2,
+        }).addTo(map);
+      } else {
+        var mapDiv = document.getElementById("map");
+        if (mapDiv) mapDiv.style.display = "none";
+      }
+
+      // 2. Modal Logic (The Fix)
+      var shouldEdit = /*[[${isEditing}]]*/ false;
+
+      function openAddItemForm() {
+        const modal = document.getElementById("addItemModal");
+        if (modal) modal.style.display = "block";
+      }
+
+      function closeAddItemForm() {
+        const modal = document.getElementById("addItemModal");
+        if (modal) modal.style.display = "none";
+      }
+
+      // Only open if the server explicitly says we are in "Edit" mode
+      window.addEventListener("DOMContentLoaded", (event) => {
+        if (shouldEdit) {
+          openAddItemForm();
+        }
+      });
+    </script>
+  </div>
+</body>
+
+</html>

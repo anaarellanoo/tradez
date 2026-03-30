@@ -1,0 +1,57 @@
+<!--inbox-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{mainlayout}">
+<head>
+    <title>Tradez - Inbox</title>
+    <link rel="stylesheet" th:href="@{/css/message.css}">
+</head>
+<body>
+<div layout:fragment="content" class="view-container">
+    <div class="inbox-wrapper">
+        <div class="inbox-header">
+            <h2>Chats</h2>
+            <span class="chat-count" th:text="${#lists.size(conversations)} + ' active'">0 active</span>
+        </div>
+        
+        <div th:if="${#lists.isEmpty(conversations)}" class="empty-inbox">
+            <p>Your inbox is quiet... for now.</p>
+            <a th:href="@{/tradez/home}" class="explore-btn">Browse Items</a>
+        </div>
+
+        <div class="chat-list">
+            <div th:each="conv : ${conversations}" class="chat-item-row">
+                <a th:href="@{/tradez/messages/{itemId}/{partnerId}(itemId=${conv.itemId}, partnerId=${conv.senderId == currentUserId ? conv.receiverId : conv.senderId})}" class="chat-link">
+                    
+                    <div class="avatar-circle" th:text="${#strings.substring(conv.name, 0, 1)}"></div>
+
+                    <div class="chat-info">
+                        <div class="chat-info-top">
+                            <strong class="partner-name" th:text="${conv.name + ' ' + conv.lastName}">Partner</strong>
+                            <small class="chat-time" th:text="${#dates.format(conv.timestamp, 'HH:mm')}"></small>
+                        </div>
+                        
+                        <div class="item-tag" th:text="${conv.itemName}">Item Name</div>
+                        
+                        <p class="msg-preview">
+                            <span class="you-label" th:if="${conv.senderId == currentUserId}">You: </span>
+                            <span th:text="${conv.content}"></span>
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-sidebar">
+        <div class="sidebar-card safety-card">
+            <div class="safety-icon">🛡️</div>
+            <h4>Safety Warning</h4>
+            <p>Trade in public areas and always inspect items before finalizing.</p>
+            <a href="#" class="safety-link">Learn more</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

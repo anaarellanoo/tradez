@@ -1,0 +1,161 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{mainlayout}">
+
+<head>
+  <title>Tradez - Profile</title>
+  <link rel="stylesheet" th:href="@{/css/profile.css}" />
+  <link rel="stylesheet" th:href="@{/css/itemCard.css}" />
+</head>
+
+<body>
+  <div layout:fragment="content" class="profile-container">
+    <!-- Account Settings Form -->
+    <div class="profile-wrapper">
+      <div class="profile-header">
+        <h2>Account Settings</h2>
+      </div>
+      <form th:action="@{/tradez/profile/edit}" th:object="${user}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}" />
+
+        <!-- Profile Image -->
+        <div class="profile-image-section">
+          <div th:if="${user.profileImageURL != null and !#strings.isEmpty(user.profileImageURL)}">
+            <img th:src="@{${user.profileImageURL}}" class="current-avatar" alt="Profile Image" />
+          </div>
+          <div th:if="${user.profileImageURL == null or #strings.isEmpty(user.profileImageURL)}"
+            class="no-avatar-placeholder">
+            <span>No Image Uploaded</span>
+          </div>
+          <div class="form-group">
+            <label>Update Profile Image</label>
+            <input type="file" name="profileImage" accept="image/*" />
+          </div>
+        </div>
+
+        <!-- User Info Grid -->
+        <div class="profile-form-grid">
+          <div class="form-group">
+            <label>First Name</label><input type="text" th:field="*{name}" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label><input type="text" th:field="*{lastName}" required />
+          </div>
+          <div class="form-group">
+            <label>Username (Fixed)</label><input type="text" th:field="*{username}" disabled />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label><input type="email" th:field="*{email}" required />
+          </div>
+          <input type="hidden" th:field="*{location}" id="location" />
+          <input type="hidden" th:field="*{latitude}" id="lat" />
+          <input type="hidden" th:field="*{longitude}" id="lng" />
+          <div class="form-group full-width">
+            <label>Current Location</label>
+            <span id="location-display">Detecting location...</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="profile-footer">
+          <button type="submit" class="btn-main btn-primary-solid" style="width: auto; padding: 12px 40px">
+            Save Changes
+          </button>
+          <div sec:authorize="isAuthenticated()" style="color: #65676b; font-size: 0.9rem">
+            Logged in as: <strong sec:authentication="name"></strong> |
+            <a th:href="@{/tradez/logout}" style="
+                  color: var(--secondary);
+                  text-decoration: none;
+                  font-weight: 600;
+                ">Logout</a>
+          </div>
+        </div>
+      </form>
+      <form th:action="@{/tradez/profile/delete}" method="post" style="margin-top: 20px; text-align: right">
+        <button type="submit" class="delete-profile-btn"
+          onclick="return confirm('Are you sure? This cannot be undone.');">
+          Delete Account
+        </button>
+      </form>
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews-given-section">
+      <h3 style="margin-top: 30px">Reviews</h3>
+      <div th:if="${#lists.isEmpty(reviewsGiven)}">
+        <p class="text-muted">You haven't reviewed any traders yet.</p>
+      </div>
+      <div th:each="rev : ${reviewsGiven}" class="review-card">
+        <strong>Reviewed:
+          <a th:href="@{/tradez/profile/{id}(id=${rev.reviewedUserId})}" th:text="${rev.reviewedName}"></a>
+        </strong>
+        <div class="star-rating">
+          <span th:each="i : ${#numbers.sequence(1,5)}" th:text="${rev.rating >= i} ? '★' : '☆'"></span>
+        </div>
+        <p th:text="${rev.comment}"></p>
+      </div>
+    </div>
+
+    <!-- User Items -->
+    <div class="user-items-section">
+      <h3 style="margin-top: 40px">Your Listed Items</h3>
+      <hr />
+      <div class="items-grid">
+        <div th:each="item : ${items}">
+          <div th:replace="~{fragments/itemCard :: itemCard(item=${item})}"></div>
+          <div th:if="${#lists.isEmpty(items)}" style="text-align: center; grid-column: 1 / -1; padding: 40px">
+            <p class="text-muted">You have no listings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            document.getElementById("lat").value = lat;
+            document.getElementById("lng").value = lng;
+
+            // Reverse geocode using OpenStreetMap
+            fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                const address = data.address;
+                const city =
+                  address.city || address.town || address.village || "";
+                const state = address.state || "";
+
+                const fullLocation = `${city}, ${state}`;
+                document.getElementById("location").value = fullLocation;
+                document.getElementById("location-display").innerText =
+                  fullLocation;
+              })
+              .catch((err) => {
+                console.log("Reverse geocoding error:", err);
+                document.getElementById("location-display").innerText =
+                  "Could not detect location";
+              });
+          },
+          function (error) {
+            alert("Location is required to update your profile.");
+            document.getElementById("location-display").innerText =
+              "Location access denied!";
+            document.querySelector("button[type='submit']").disabled = true;
+          },
+        );
+      } else {
+        alert("Your browser does not support geolocation.");
+        document.getElementById("location-display").innerText =
+          "Geolocation not supported";
+        document.querySelector("button[type='submit']").disabled = true;
+      }
+    </script>
+  </div>
+</body>
+
+</html>

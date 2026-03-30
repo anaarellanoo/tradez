@@ -1,0 +1,40 @@
+<div th:fragment="itemCard">
+    <div class="item-card">
+
+        <div th:if="${item.status == 'traded'}" class="traded-label">
+            Traded
+        </div>
+
+        <form th:action="@{/tradez/item/save-toggle}" method="post" class="save-form-overlay">
+            <input type="hidden" name="itemId" th:value="${item.itemId}" />
+            <button type="submit" class="save-trigger">
+                <div class="heart-shape" th:classappend="${item.isSaved} ? 'heart-active' : ''"></div>
+            </button>
+        </form>
+
+        <a th:href="@{/tradez/item/{id}(id=${item.itemId})}" class="card-link">
+
+            <div class="item-image-container">
+                <img th:src="${item.imageUrl != null ? item.imageUrl : '/css/images/no-image.png'}" alt="Item Image">
+            </div>
+
+            <div class="item-details">
+                <h2 class="item-title" th:text="${item.itemName}">Cookie Box</h2>
+
+                <div class="return-section">
+                    <h3 class="label">Trading for:</h3>
+                    <div class="trade-value" th:text="${item.desiredReturn}">Chips Ahoy Cookie Box</div>
+                </div>
+
+                <div class="item-category" th:text="${item.categoryName}">Dessert</div>
+
+                <p class="item-meta-footer">
+                    <span th:text="${item.location}">Phoenix</span>
+                    <span class="dot-separator"> • </span>
+                    <span th:text="${item.getRelativeTime()}"></span>
+                </p>
+            </div>
+
+        </a>
+    </div>
+</div>

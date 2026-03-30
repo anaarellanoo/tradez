@@ -1,0 +1,122 @@
+<div th:fragment="addItemCard">
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAddItemForm()">&times;</span>
+
+            <h2
+                th:text="${item != null && item.itemId != null && item.itemId != 0} ? 'Edit Listing' : 'Create a Listing'">
+                Create a Listing</h2>
+
+            <form th:action="${item.itemId != null} ? @{/tradez/update} : @{/tradez/save}" th:object="${item}"
+                method="post" enctype="multipart/form-data">
+
+                <input type="hidden" th:field="*{itemId}" />
+                <input type="hidden" th:field="*{userId}" />
+
+                <div class="form-group">
+                    <label style="font-weight: 700; color: #444;">Item Images (Select one)</label>
+
+                    <div id="imagePreviewContainer">
+                        <div th:if="${item.imageUrl != null}" class="preview-wrapper">
+                            <img th:src="${item.imageUrl}" />
+                        </div>
+                    </div>
+
+                    <input type="file" name="imageFile" id="imageFile" accept="image/*" onchange="previewImage()"
+                        style="margin-top: 10px;">
+
+                </div>
+
+                <h3>What are you offering?</h3>
+                <div class="form-group">
+                    <input type="text" th:field="*{itemName}" placeholder="Title (e.g., Nintendo Switch OLED)" required>
+                </div>
+
+                <div class="form-group">
+                    <textarea th:field="*{description}" placeholder="Describe the item's condition, age, and details..."
+                        required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <select th:field="*{categoryId}" required>
+                            <option value="" disabled selected>Category</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.categoryId}"
+                                th:text="${cat.categoryName}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <select th:field="*{conditionId}" required>
+                            <option value="" disabled selected>Condition</option>
+                            <option th:each="cond : ${conditions}" th:value="${cond.conditionId}"
+                                th:text="${cond.conditionName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>What would you like in return?</h3>
+                <div class="form-group">
+                    <select th:field="*{desiredCategoryId}" required>
+                        <option value="" disabled selected>Target Category</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.categoryId}"
+                            th:text="${cat.categoryName}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea type="text" th:field="*{desiredReturn}" placeholder="Specific items or 'Anything!'"
+                        required></textarea>
+                </div>
+
+                <h3>Logistics</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <input type="radio" id="typePhysical" th:field="*{isOnline}" value="false">
+                        <label for="typePhysical">📍 Local Meetup</label>
+
+                        <input type="radio" id="typeOnline" th:field="*{isOnline}" value="true">
+                        <label for="typeOnline">🌐 Online Trade</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn"
+                    th:text="${item.itemId != 0} ? 'Save Changes' : 'Post Listing'">Post Listing</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function previewImage() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = ''; // clear previous
+            const file = document.getElementById('imageFile').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '200px'; // optional styling
+                img.style.marginTop = '10px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Add this to your addItemCard script
+        async function handleImageUpload(event) {
+            const imageFile = event.target.files[0];
+
+            const options = {
+                maxSizeMB: 1,          // Target size 1MB
+                maxWidthOrHeight: 1200, // Max dimensions
+                useWebWorker: true
+            }
+            try {
+                const compressedFile = await imageCompression(imageFile, options);
+                // Now upload 'compressedFile' instead of 'imageFile'
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    </script>
+</div>

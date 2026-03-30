@@ -1,0 +1,90 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/authForm.css}" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="auth-container">
+        <!-- Logo -->
+        <div class="auth-logo">
+          <img th:src="@{/css/images/logo.png}" alt="Tradez Logo" />
+        </div>
+
+        <!-- Login Card -->
+        <div class="auth-card login-card">
+          <h1>TRADEZ</h1>
+          <h1>Login</h1>
+          <form th:action="@{/tradez/login}" method="post">
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <input type="hidden" name="latitude" id="lat" />
+            <input type="hidden" name="longitude" id="lng" />
+            <input type="hidden" name="location" id="city" />
+
+            <div th:if="${param.error}" class="error">
+              Invalid username or password.
+            </div>
+            <button type="submit">Login</button>
+          </form>
+          <p>
+            Don't have an account?
+            <a th:href="@{/tradez/register}">Register here</a>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div
+        th:if="${error}"
+        class="error-message"
+        onclick="this.style.display = 'none'"
+      >
+        <p th:text="${error}"></p>
+      </div>
+
+      <!-- Geolocation Script -->
+      <script>
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            document.getElementById("lat").value = lat;
+            document.getElementById("lng").value = lng;
+
+            fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                const address = data.address;
+                const city =
+                  address.city || address.town || address.village || "";
+                const state = address.state || "";
+                document.getElementById("city").value = `${city}, ${state}`;
+              });
+          },
+          function (error) {
+            alert("Location is required to use this app.");
+            document.querySelector("button[type='submit']").disabled = true;
+          },
+        );
+      </script>
+    </div>
+  </body>
+</html>
