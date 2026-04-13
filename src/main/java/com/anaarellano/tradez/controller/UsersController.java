@@ -72,7 +72,7 @@ public class UsersController
         } 
         catch (RuntimeException e) 
         {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             return "register";
         }
     }

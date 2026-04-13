@@ -47,12 +47,8 @@ public class UserService
      */
     public void register(UserModel userModel) 
     {
-        if (userModel.getLatitude() == null ||
-                userModel.getLongitude() == null ||
-                userModel.getLocation() == null ||
-                userModel.getLocation().isBlank()) 
-        {
-            throw new RuntimeException("Location access is required to register.");
+        if (userModel.getLatitude() == null || userModel.getLongitude() == null) {
+            throw new RuntimeException("Location not received. Please allow location access.");
         }
 
         // Check if username exists
@@ -70,7 +66,9 @@ public class UserService
         UserEntity userEntity = converter.toEntity(userModel);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userRepository.save(userEntity);
-        
+        System.out.println("LAT: " + userModel.getLatitude());
+        System.out.println("LNG: " + userModel.getLongitude());
+        System.out.println("CITY: " + userModel.getLocation());
     }
 
     /**
@@ -148,6 +146,8 @@ public class UserService
             if (city != null) user.setLocation(city);
 
             userRepository.update(user);
+
+            System.out.println("UPDATED LOCATION: " + lat + ", " + lng + ", " + city);
         }
     }
 

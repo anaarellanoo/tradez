@@ -1,90 +1,127 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layout}">
-
-<head>
-  <title>Register</title>
-  <link rel="stylesheet" th:href="@{/css/authForm.css}" />
-</head>
-
-<body>
-  <div layout:fragment="content">
-    <div class="auth-container">
-      <!-- Logo -->
-      <div class="auth-logo">
-        <img th:src="@{/css/images/logo.png}" alt="Tradez Logo" />
-      </div>
-
-      <!-- Register Card -->
-      <div class="auth-card register-card">
-        <h1>TRADEZ</h1>
-        <h1>Sign Up</h1>
-
-        <div th:if="${errorMessage}" class="error">
-          <p th:text="${errorMessage}"></p>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <title>Register</title>
+    <link rel="stylesheet" th:href="@{/css/authForm.css}" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="auth-container">
+        <!-- Logo -->
+        <div class="auth-logo">
+          <img th:src="@{/css/images/logo.png}" alt="Tradez Logo" />
         </div>
 
-        <form th:action="@{/tradez/register}" th:object="${user}" method="post">
-          <label for="name">First Name:</label>
-          <input type="text" th:field="*{name}" placeholder="First Name" required />
+        <!-- Register Card -->
+        <div class="auth-card register-card">
+          <h1>TRADEZ</h1>
+          <h1>Sign Up</h1>
 
-          <label for="lastName">Last Name:</label>
-          <input type="text" th:field="*{lastName}" placeholder="Last Name" required />
+          <div th:if="${errorMessage}" class="error">
+            <p th:text="${errorMessage}"></p>
+          </div>
 
-          <label for="username">Username:</label>
-          <input type="text" th:field="*{username}" placeholder="Username" required />
+          <form
+            th:action="@{/tradez/register}"
+            th:object="${user}"
+            method="post"
+          >
+            <label for="name">First Name:</label>
+            <input
+              type="text"
+              th:field="*{name}"
+              placeholder="First Name"
+              required
+            />
 
-          <label for="password">Password:</label>
-          <input type="password" th:field="*{password}" placeholder="Password"
-            pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
-            title="Must contain at least 8 characters, 1 uppercase, 1 number, 1 special character" required />
+            <label for="lastName">Last Name:</label>
+            <input
+              type="text"
+              th:field="*{lastName}"
+              placeholder="Last Name"
+              required
+            />
 
-          <label for="email">Email:</label>
-          <input type="email" th:field="*{email}" placeholder="Email" required />
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              th:field="*{username}"
+              placeholder="Username"
+              required
+            />
 
-          <!-- Hidden location fields -->
-          <input type="hidden" th:field="*{latitude}" id="lat" />
-          <input type="hidden" th:field="*{longitude}" id="lng" />
-          <input type="hidden" th:field="*{location}" id="city" />
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              th:field="*{password}"
+              placeholder="Password"
+              pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+              title="Must contain at least 8 characters, 1 uppercase, 1 number, 1 special character"
+              required
+            />
 
-          <button type="submit">Register</button>
-        </form>
-        <p>
-          Already have an account?
-          <a th:href="@{/tradez/login}">Login here</a>.
-        </p>
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              th:field="*{email}"
+              placeholder="Email"
+              required
+            />
+
+            <!-- Hidden location fields -->
+            <input type="hidden" th:field="*{latitude}" id="lat" />
+            <input type="hidden" th:field="*{longitude}" id="lng" />
+            <input type="hidden" th:field="*{location}" id="city" />
+
+            <button type="submit">Register</button>
+          </form>
+          <p>
+            Already have an account?
+            <a th:href="@{/tradez/login}">Login here</a>.
+          </p>
+        </div>
       </div>
+
+      <!-- Geolocation Script -->
+      <script>
+        let locationReady = false;
+
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              document.getElementById("lat").value = lat;
+              document.getElementById("lng").value = lng;
+
+              fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+                .then((response) => response.json())
+                .then((data) => {
+                  const address = data.address;
+                  const city = address.city || address.town || address.village || "";
+                  const state = address.state || "";
+
+                  document.getElementById("city").value = `${city}, ${state}`;
+                  locationReady = true;
+                });
+            },
+            function (error) {
+              alert("Location is required to use this app.");
+            }
+          );
+
+          // 🚨 BLOCK FORM SUBMIT IF LOCATION NOT READY
+          document.querySelector("form").addEventListener("submit", function (e) {
+            if (!locationReady) {
+              e.preventDefault();
+              alert("Please wait for location to load.");
+            }
+          });
+      </script>
     </div>
-
-    <!-- Geolocation Script -->
-    <script>
-      navigator.geolocation.getCurrentPosition(
-        function (position) {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          document.getElementById("lat").value = lat;
-          document.getElementById("lng").value = lng;
-
-          fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              const address = data.address;
-              const city =
-                address.city || address.town || address.village || "";
-              const state = address.state || "";
-              document.getElementById("city").value = `${city}, ${state}`;
-            }).catch(() => {
-              alert("Location is required to use this app.")
-            });
-        },
-        function (error) {
-          alert("Location is required to use this app.");
-        },
-      );
-    </script>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -41,12 +41,13 @@
 
             <!-- Icons -->
             <div class="icons">
-              <a href="javascript:void(0)" onclick="toggleNotifs()">
-                <button class="icon-btn">
+              <a href="javascript:void(0)" onclick="toggleNotifs()" class="notif-wrapper">
+                <div class="icon-btn">
                   <img th:src="@{/css/images/bell.svg}" alt="Notifications" class="icon-svg" />
-                </button>
-                <span id="notification-badge" th:if="${unreadCount > 0}" th:text="${unreadCount}">
-                </span>
+
+                  <span id="notification-badge" th:if="${unreadCount > 0}" th:text="${unreadCount}">
+                  </span>
+                </div>
               </a>
               <a th:href="@{/tradez/profile}">
                 <button class="icon-btn">
@@ -68,8 +69,7 @@
   <div id="notificationSidebar">
     <div class="sidebar-header">
       <h3 class="m-0">Notifications</h3>
-      <button class="btn btn-sm btn-light" onclick="toggleNotifs()"
-        style="border: none; background: none; color: white; font-size: 20px">
+      <button class="btn btn-sm btn-light" onclick="toggleNotifs()">
         ×
       </button>
     </div>
