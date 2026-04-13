@@ -71,7 +71,7 @@ public class ItemController
     @GetMapping("/search")
     public String search(@RequestParam(value = "query", required = false) String query,
         @RequestParam(value = "cat", required = false) Integer categoryId,
-        @RequestParam(value = "cond", required = false) List<Integer> conditionId,
+        @RequestParam(value = "cond", required = false) Integer conditionId,
         @RequestParam(value = "desiredCat", required = false) Integer desiredCategoryId,
         @RequestParam(value = "dist", required = false) String dist,
         Model model, Principal principal) 
@@ -79,7 +79,7 @@ public class ItemController
 
         UserModel currentUser = userService.findByUsername(principal.getName());
 
-        boolean hasFilters = (categoryId != null) || (conditionId != null && !conditionId.isEmpty()) || (dist != null && !dist.isEmpty());
+        boolean hasFilters = (categoryId != null) || (conditionId != null) || (dist != null && !dist.isEmpty());
 
         List<ItemModel> results;
         if (!hasFilters && query != null && !query.isEmpty()) 

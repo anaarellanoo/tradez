@@ -28,7 +28,6 @@ public class UserRepository implements UserRepositoryInterface
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     /**
      * Find the user by Id
      */
@@ -142,10 +141,8 @@ public class UserRepository implements UserRepositoryInterface
     public UserEntity findByEmail(String email) 
     {
         String sql = "SELECT userId, name, lastName, username, password, email, location, latitude, longitude, createdAt, profileImageURL FROM users WHERE email = ?";
-        try 
-        {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> 
-                new UserEntity(
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new UserEntity(
                     rs.getInt("userId"),
                     rs.getString("name"),
                     rs.getString("lastName"),
@@ -156,11 +153,8 @@ public class UserRepository implements UserRepositoryInterface
                     rs.getDouble("latitude"),
                     rs.getDouble("longitude"),
                     rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
-                    rs.getString("profileImageURL")
-                ), email);
-        } 
-        catch (EmptyResultDataAccessException e) 
-        {
+                    rs.getString("profileImageURL")), email);
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
@@ -171,7 +165,7 @@ public class UserRepository implements UserRepositoryInterface
     @Override
     public void deleteById(int userId) 
     {
-        String sql = "DELETE FROM users WHERE userId = ?";
-        jdbcTemplate.update(sql, userId);
+        String deleteSql = "DELETE FROM users WHERE userId = ?";
+        jdbcTemplate.update(deleteSql, userId);
     }
 }

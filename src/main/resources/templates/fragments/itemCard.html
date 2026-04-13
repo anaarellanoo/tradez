@@ -29,6 +29,8 @@
                 <div class="item-category" th:text="${item.categoryName}">Dessert</div>
 
                 <p class="item-meta-footer">
+                    <span th:text="${item.conditionName}">Condition</span>
+                    <span class="dot-separator"> • </span>
                     <span th:text="${item.location}">Phoenix</span>
                     <span class="dot-separator"> • </span>
                     <span th:text="${item.getRelativeTime()}"></span>

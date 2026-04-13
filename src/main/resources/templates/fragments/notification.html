@@ -1,29 +1,32 @@
-<!--notification.html-->
 <div th:fragment="notificationSidebar">
+
     <div id="sidebarOverlay" onclick="toggleNotifs()"></div>
 
     <div id="notificationSidebar">
+
         <div class="sidebar-header">
-            <h3 style="margin:0; color:white;">Notifications</h3>
-            <button onclick="toggleNotifs()">&times;</button>
+            <h3>Notifications</h3>
+            <button onclick="toggleNotifs()" class="close-btn">&times;</button>
         </div>
-        
+
         <div class="sidebar-content">
-            <div th:if="${#lists.isEmpty(notifications)}">
+
+            <div th:if="${#lists.isEmpty(notifications)}" class="empty-state">
                 <p>No new alerts!</p>
             </div>
 
-            <div th:each="n : ${notifications}" 
-                 class="sidebar-notif-item" 
-                 th:classappend="${!n.isRead} ? 'unread' : ''"
-                 th:with="url=${n.type == 'MESSAGE' ? '/tradez/messages/' + n.itemId + '/' + n.senderId : '/tradez/item/' + n.itemId}"
-                 th:onclick="handleNotifClick([[${n.id}]], [[${url}]])">
-                
+            <div th:each="n : ${notifications}" class="notif-item" th:classappend="${!n.isRead} ? 'unread' : ''"
+                th:with="url=${n.type == 'MESSAGE' ? '/tradez/messages/' + n.itemId + '/' + n.senderId : '/tradez/item/' + n.itemId}"
+                th:onclick="handleNotifClick([[${n.id}]], [[${url}]])">
+
                 <div class="notif-body">
-                    <p th:text="${n.content}" style="margin:0; font-size:14px;"></p>
+                    <p th:text="${n.content}"></p>
                     <small th:text="${#temporals.format(n.dateCreated, 'MMM dd, h:mm a')}"></small>
                 </div>
+
             </div>
+
         </div>
     </div>
+
 </div>

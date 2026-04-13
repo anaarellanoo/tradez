@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.anaarellano.tradez.models.UserModel;
 import com.anaarellano.tradez.service.UserService;
@@ -90,24 +89,4 @@ public class UsersController
         model.addAttribute("pageTitle", "Login");
         return "login";
     }
-
-    @GetMapping("/checkemail")
-    public String showCheckEmailPage() 
-    {
-        return "checkemail"; 
-    }
-
-    @PostMapping("/checkemail")
-    public String checkEmail(@RequestParam String email) 
-    {
-        UserModel user = userService.findByEmail(email);
-        if (user != null) {
-            // Email exists → go to login
-            return "redirect:/tradez/login";
-        } else {
-            // Email not found → go to registration
-            return "redirect:/tradez/register";
-        }
-    }
-
 }

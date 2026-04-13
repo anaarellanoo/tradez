@@ -10,4 +10,5 @@ import com.anaarellano.tradez.models.ConditionEntity;
 public interface ConditionRepositoryInterface 
 {
     List<ConditionEntity> findAll();
+    String findConditionName(int id);
 }

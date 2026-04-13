@@ -24,10 +24,11 @@ public class ConditionModel
      * @param description
      * @param conditionName
      */
-    public ConditionModel(int conditionId, String description, String conditionName) {
+    public ConditionModel(int conditionId, String conditionName, String description) 
+    {
         this.conditionId = conditionId;
-        this.description = description;
         this.conditionName = conditionName;
+        this.description = description;
     }
 
     /********************* GETTERS AND SETTER *********************/

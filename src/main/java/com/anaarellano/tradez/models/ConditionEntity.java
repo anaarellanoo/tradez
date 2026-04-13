@@ -22,10 +22,11 @@ public class ConditionEntity
      * @param description
      * @param conditionName
      */
-    public ConditionEntity(int conditionId, String description, String conditionName) {
+    public ConditionEntity(int conditionId, String conditionName, String description) 
+    {
         this.conditionId = conditionId;
-        this.description = description;
         this.conditionName = conditionName;
+        this.description = description;
     }
 
     /********************* GETTERS AND SETTER *********************/

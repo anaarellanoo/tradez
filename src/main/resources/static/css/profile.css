@@ -29,20 +29,23 @@
     border-radius: 12px;
 }
 
-.current-avatar {
+.current-avatar,
+.no-avatar-placeholder {
     width: 120px;
     height: 120px;
-    object-fit: cover;
     border-radius: 50%;
+}
+
+/* avatar image */
+.current-avatar {
+    object-fit: cover;
     border: 4px solid #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* placeholder */
 .no-avatar-placeholder {
-    width: 120px;
-    height: 120px;
     background: #eef1f6;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,14 +85,14 @@
     transition: border-color 0.2s;
 }
 
-.form-group input:disabled {
-    background: #f0f2f5;
-    cursor: not-allowed;
-}
-
 .form-group input:focus {
     outline: none;
     border-color: var(--secondary);
+}
+
+.form-group input:disabled {
+    background: #f0f2f5;
+    cursor: not-allowed;
 }
 
 .profile-footer {
@@ -114,15 +117,19 @@
 
 .delete-profile-btn:hover {
     background: #ff4d4d;
-    color: white;
+    color: #fff;
 }
 
+/* ===== Sections ===== */
 
-.user-items-section, .reviews-given-section h3 {
+.user-items-section h3,
+.reviews-given-section h3 {
     margin-bottom: 20px;
     font-size: 1.4rem;
     color: var(--primary);
 }
+
+/* ===== Items ===== */
 
 .items-grid {
     display: grid;
@@ -130,35 +137,38 @@
     gap: 20px;
 }
 
+/* ===== Layout wrapper ===== */
+
 .profile-container {
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
-    display: table-column;
-    gap: 20px;
 }
 
+/* removed invalid: display: table-column */
 
-.seller-card { 
+/* ===== Seller ===== */
+
+.seller-card {
     flex: 1 1 300px;
-    background: white; 
-    padding: 30px; 
-    border-radius: 12px; 
-    display: flex; 
-    gap: 20px; 
-    align-items: center; 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-
-.profile-lg { 
-    width: 120px; 
-    height: 120px; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    border: 3px solid #1877F2; 
+.profile-lg {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #1877F2;
 }
 
+/* ===== Reviews ===== */
 
 .review-card {
     background: white;
@@ -170,18 +180,18 @@
 }
 
 .star-rating {
-    color: #f4c150; 
+    color: #f4c150;
     font-size: 0.8rem;
 }
 
 .reviews-given-section {
-    flex: 400px;          
-    display: grid;
-    flex-direction: column;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;                
     max-width: 800px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
 }
+
+/* ===== Trade info ===== */
 
 .trade-callout-in-depth {
     background: #f0f7ff;
@@ -196,6 +206,8 @@
     color: #333;
 }
 
+/* ===== Badges ===== */
+
 .badge-desired {
     background-color: #e7f3ff;
     color: #1877f2;
@@ -207,13 +219,14 @@
     color: #65676b;
 }
 
-/* Responsive Adjustments */
+/* ===== Responsive ===== */
+
 @media (max-width: 1024px) {
     .profile-container {
         flex-direction: column;
     }
-    
-    .seller-card, .reviews-given-container {
+
+    .seller-card {
         flex: 1 1 100%;
     }
 }

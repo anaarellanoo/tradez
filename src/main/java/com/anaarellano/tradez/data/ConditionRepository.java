@@ -31,13 +31,25 @@ public class ConditionRepository implements ConditionRepositoryInterface
     @Override
     public List<ConditionEntity> findAll() 
     {
-        
+
         String sql = "SELECT conditionId, conditionName, description FROM conditions";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ConditionEntity(
-            rs.getInt("conditionId"),
-            rs.getString("conditionName"),
-            rs.getString("description")
-        ));
+                rs.getInt("conditionId"),
+                rs.getString("conditionName"),
+                rs.getString("description")));
+    }
+    
+
+    /**
+     * Find the condition name from the id
+     */
+    @Override
+    public String findConditionName(int id) 
+    {
+        String sql = "SELECT conditionName FROM conditions WHERE conditionId = ?";
+
+        return jdbcTemplate.queryForObject(sql, String.class, id);
+
     }
     
 }

@@ -1,143 +1,159 @@
-.modal .modal-content {
-    max-width: 600px;
-    width: 90%;
-    border-radius: 20px;
-    padding: 30px;
-    border: none;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    box-sizing: border-box;
+/* =========================
+   MODAL BASE
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
 }
 
+.modal-content {
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
 .modal h2 {
+    text-align: center;
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--primary);
-    margin-bottom: 25px;
-    text-align: center;
+    margin-bottom: 20px;
 }
 
 .modal h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #8a8d91;
-    margin: 25px 0 15px 0;
-    border-bottom: 1px solid #f0f2f5;
-    padding-bottom: 8px;
+    color: #777;
+    margin: 25px 0 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
 }
+
+/* =========================
+   FORM
+========================= */
 
 .form-group {
-    margin-bottom: 15px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    margin-bottom: 15px;
 }
 
-.modal input[type="text"],
-.modal textarea,
-.modal select,
-.modal input[type="file"] {
+input,
+textarea,
+select {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #f0f2f5;
+    padding: 12px;
     border-radius: 10px;
-    font-size: 0.95rem;
+    border: 1px solid #e5e5e5;
     background: #f9f9fb;
-    transition: all 0.2s;
-    box-sizing: border-box;
+    font-size: 0.95rem;
+    transition: 0.2s;
 }
 
-.modal input:focus,
-.modal textarea:focus,
-.modal select:focus {
-    background: #fff;
-    border-color: var(--secondary);
+input:focus,
+textarea:focus,
+select:focus {
     outline: none;
+    border-color: #3b82f6;
+    background: white;
 }
 
-.modal textarea {
+textarea {
     min-height: 100px;
     resize: vertical;
 }
 
+/* =========================
+   FORM ROW
+========================= */
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+#existingImagePreview img,
+#imagePreviewContainer img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+/* =========================
+   RADIO BUTTONS
+========================= */
+
 .radio-group {
     display: flex;
     gap: 10px;
-    background: #f0f2f5;
-    padding: 5px;
-    border-radius: 12px;
-    flex-wrap: wrap;
 }
 
-.radio-group input[type="radio"] {
+.radio-option {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.radio-option input {
     display: none;
 }
 
-.radio-group label {
-    flex: 1 1 45%;
-    text-align: center;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-}
-
-.radio-group input[type="radio"]:checked + label {
+.radio-option:has(input:checked) {
     background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    color: var(--primary);
+    border: 2px solid #3b82f6;
 }
 
-.submit-btn {
-    width: 100%;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
-    margin-top: 30px;
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.close-btn {
+    float: right;
+    font-size: 22px;
     cursor: pointer;
-    transition: transform 0.1s;
 }
 
-.submit-btn:active {
-    transform: scale(0.98);
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.imagePreviewContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.imagePreviewContainer img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-/* Responsive Adjustments */
 @media (max-width: 768px) {
     .form-row {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
 
-    .radio-group label {
-        flex: 1 1 100%;
-    }
-
-    .modal .modal-content {
-        padding: 20px;
-    }
-
-    .modal h2 {
-        font-size: 1.4rem;
+    .radio-group {
+        flex-direction: column;
     }
 }

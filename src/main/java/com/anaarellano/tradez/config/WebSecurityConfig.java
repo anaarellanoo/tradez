@@ -46,7 +46,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/tradez/checkemail", "/tradez/register", "/tradez/login", "/css/**", "/js/**")
+                        .requestMatchers( "/tradez/register", "/tradez/login", "/css/**", "/js/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
@@ -55,7 +55,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/tradez/logout")
-                        .logoutSuccessUrl("/tradez/checkemail"))
+                        .logoutSuccessUrl("/tradez/login"))
                 .authenticationProvider(authenticationProvider());
 
         return http.build();

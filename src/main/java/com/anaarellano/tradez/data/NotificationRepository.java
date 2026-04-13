@@ -124,10 +124,11 @@ public class NotificationRepository implements NotificationRepositoryInterface
      * Mark all the notifications from a chat
      * as read when opened 
      */
+    @Override
     public void markChatAsRead(int userId, int partnerId, int itemId) 
     {
         String sql = "UPDATE notifications SET isRead = true " +
-                    "WHERE recipientId = ? AND senderId = ? AND itemId = ? AND type = 'MESSAGE'";
+                "WHERE recipientId = ? AND senderId = ? AND itemId = ? AND type = 'MESSAGE'";
         jdbcTemplate.update(sql, userId, partnerId, itemId);
     }
     

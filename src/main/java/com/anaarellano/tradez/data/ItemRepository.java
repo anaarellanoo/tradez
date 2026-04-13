@@ -203,6 +203,7 @@ public class ItemRepository implements ItemRepositoryInterface
      * @param query
      * @return
      */
+    @Override
     public List<ItemEntity> searchItems(String query) 
     {
         String sql = "SELECT i.*, u.name, u.lastName, c.categoryName, con.conditionName, " +
@@ -239,7 +240,7 @@ public class ItemRepository implements ItemRepositoryInterface
      * category, condition, location, distance
      * @param query
      * @param categoryId
-     * @param conditionId
+     * @param condId
      * @param desiredCategoryId
      * @param isOnline
      * @param userLat
@@ -247,7 +248,8 @@ public class ItemRepository implements ItemRepositoryInterface
      * @param maxDistance
      * @return
      */
-    public List<ItemEntity> findWithFilters(String query, Integer categoryId, List<Integer> conditionId,
+    @Override
+    public List<ItemEntity> findWithFilters(String query, Integer categoryId, Integer condId,
                                             Integer desiredCategoryId, Boolean isOnline,
                                             Double userLat, Double userLng, Integer maxDistance) 
     {
@@ -293,9 +295,9 @@ public class ItemRepository implements ItemRepositoryInterface
         }
 
         // Filter for a Condition
-        if (conditionId != null) { 
+        if (condId != null) { 
             sql.append("AND i.conditionId = ? ");
-            params.add(conditionId);
+            params.add(condId);
         }
 
         // Filter for a Category
@@ -342,22 +344,18 @@ public class ItemRepository implements ItemRepositoryInterface
      * @param itemId
      * @param imageUrl
      */
+    @Override
     public void updateImage(int itemId, String imageUrl) 
     {
         String checkSql = "SELECT COUNT(*) FROM item_images WHERE itemId = ?";
         Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, itemId);
 
-        if (count != null && count > 0) 
-        {
-            jdbcTemplate.update("DELETE FROM item_images WHERE itemId = ? AND imageUrl <> ?", itemId, imageUrl);
-            // Update image
-            String updateSql = "UPDATE item_images SET imageUrl = ? WHERE itemId = ?";
-            jdbcTemplate.update(updateSql, imageUrl, itemId);
-        } 
-        else 
-        {
-            // Save image 
-            saveImage(itemId, imageUrl);
+        if (count != null && count > 0) {
+            String sql = "UPDATE item_images SET imageUrl = ? WHERE itemId = ?";
+            jdbcTemplate.update(sql, imageUrl, itemId);
+        } else {
+            String sql = "INSERT INTO item_images (itemId, imageUrl) VALUES (?, ?)";
+            jdbcTemplate.update(sql, itemId, imageUrl);
         }
         
     }
@@ -449,10 +447,10 @@ public class ItemRepository implements ItemRepositoryInterface
         entity.setImageUrl(rs.getString("imageUrl"));
         java.sql.Timestamp ts = rs.getTimestamp("dateCreated");
 
-        if (ts != null) 
-        {
+        if (ts != null) {
             entity.setDateCreated(ts.toLocalDateTime());
         }
         return entity;
     }
+
 }

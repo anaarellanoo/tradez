@@ -245,14 +245,14 @@ public class ItemService {
      * @param maxDist
      * @return
      */
-    public List<ItemModel> getFilteredItems(String query, Integer catId, List<Integer> condIds,
+    public List<ItemModel> getFilteredItems(String query, Integer catId, Integer condId,
             Integer desiredCategoryId,
             Boolean isOnline, UserModel currentUser, Integer maxDist) {
         Double userLat = (currentUser != null) ? currentUser.getLatitude() : null;
         Double userLng = (currentUser != null) ? currentUser.getLongitude() : null;
 
         List<ItemEntity> entities = itemRepository.findWithFilters(
-                query, catId, condIds, desiredCategoryId, isOnline, userLat, userLng, maxDist);
+                query, catId, condId, desiredCategoryId, isOnline, userLat, userLng, maxDist);
 
         return entities.stream().map(Converter::toModel).collect(Collectors.toList());
     }

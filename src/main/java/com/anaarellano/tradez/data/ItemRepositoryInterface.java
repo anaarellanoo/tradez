@@ -20,5 +20,9 @@ public interface  ItemRepositoryInterface
     boolean checkIfSaved(int userId, int itemId);
     List<ItemEntity> findSavedByUserId(int userId);
     List<ItemEntity> findByUserId(int userId);
+    List<ItemEntity> searchItems(String query);
+    void updateImage(int itemId, String imageUrl);
+    List<ItemEntity> findWithFilters(String query, Integer categoryId, Integer condId, Integer desiredCategoryId,
+            Boolean isOnline, Double userLat, Double userLng, Integer maxDistance);
     
 }

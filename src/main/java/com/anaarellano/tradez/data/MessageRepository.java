@@ -80,23 +80,24 @@ public class MessageRepository implements MessageRepositoryInterface
      * @param userId
      * @return
      */
+    @Override
     public List<Map<String, Object>> getUserInbox(int userId) 
     {
         String sql = "SELECT m.*, i.itemName, u.name, u.lastName " +
-                    "FROM messages m " +
-                    "JOIN items i ON m.itemId = i.itemId " +
-                    "JOIN users u ON (CASE WHEN m.senderId = ? THEN m.receiverId ELSE m.senderId END) = u.userId " +
-                    "WHERE (m.senderId = ? OR m.receiverId = ?) " +
-                    "AND m.messageId IN (" +
-                    "    SELECT MAX(messageId) " +
-                    "    FROM messages " +
-                    "    WHERE senderId = ? OR receiverId = ? " +
-                    "    GROUP BY itemId, " +
-                    "             (CASE WHEN senderId < receiverId THEN senderId ELSE receiverId END), " +
-                    "             (CASE WHEN senderId > receiverId THEN senderId ELSE receiverId END)" +
-                    ") " +
-                    "ORDER BY m.timestamp DESC";
-                    
+                "FROM messages m " +
+                "JOIN items i ON m.itemId = i.itemId " +
+                "JOIN users u ON (CASE WHEN m.senderId = ? THEN m.receiverId ELSE m.senderId END) = u.userId " +
+                "WHERE (m.senderId = ? OR m.receiverId = ?) " +
+                "AND m.messageId IN (" +
+                "    SELECT MAX(messageId) " +
+                "    FROM messages " +
+                "    WHERE senderId = ? OR receiverId = ? " +
+                "    GROUP BY itemId, " +
+                "             (CASE WHEN senderId < receiverId THEN senderId ELSE receiverId END), " +
+                "             (CASE WHEN senderId > receiverId THEN senderId ELSE receiverId END)" +
+                ") " +
+                "ORDER BY m.timestamp DESC";
+
         return jdbcTemplate.queryForList(sql, userId, userId, userId, userId, userId);
     }
 

@@ -47,6 +47,14 @@ public class UserService
      */
     public void register(UserModel userModel) 
     {
+        if (userModel.getLatitude() == null ||
+                userModel.getLongitude() == null ||
+                userModel.getLocation() == null ||
+                userModel.getLocation().isBlank()) 
+        {
+            throw new RuntimeException("Location access is required to register.");
+        }
+
         // Check if username exists
         if (userRepository.findByUsername(userModel.getUsername()) != null) 
         {
@@ -73,17 +81,6 @@ public class UserService
     public UserModel findByUsername(String username) 
     {
         UserEntity entity = userRepository.findByUsername(username);
-        return entity != null ? converter.toModel(entity) : null;
-    }
-
-    /**
-     * Find by Email
-     * @param email
-     * @return
-     */
-    public UserModel findByEmail(String email) 
-    {
-        UserEntity entity = userRepository.findByEmail(email);
         return entity != null ? converter.toModel(entity) : null;
     }
 
@@ -151,8 +148,6 @@ public class UserService
             if (city != null) user.setLocation(city);
 
             userRepository.update(user);
-
-            System.out.println("UPDATED LOCATION: " + lat + ", " + lng + ", " + city);
         }
     }
 

@@ -4,8 +4,10 @@
 
 <head>
   <title>Tradez - Profile</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
   <link rel="stylesheet" th:href="@{/css/profile.css}" />
   <link rel="stylesheet" th:href="@{/css/itemCard.css}" />
+  
 </head>
 
 <body>
@@ -119,7 +121,6 @@
             document.getElementById("lat").value = lat;
             document.getElementById("lng").value = lng;
 
-            // Reverse geocode using OpenStreetMap
             fetch(
               `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
             )
